@@ -73,6 +73,12 @@ os.system(f"bowtie2 --quiet -x Genome_Index -1 {in_genome_2_1} -2 {in_genome_2_2
 num_reads_after1 = read_count(["filtered1.1.fq","filtered1.2.fq"])
 num_reads_after2 = read_count(["filtered2.1.fq","filtered2.2.fq"])
 
-with open("PipelineProject.log", 'w') as f:
+with open("PipelineProject.log", 'a') as f:
     f.write(f"Donor1 (2dpi) had {num_reads_before1} read pairs before Bowtie2 filtering and {num_reads_after1} read pairs after.\n")
     f.write(f"Donor2 (6dpi) had {num_reads_before2} read pairs before Bowtie2 filtering and {num_reads_after2} read pairs after.\n")
+
+spades_cmd = "spades.py -k 99 -t 2 --only-assembler --pe1-1 filtered1.1.fq --pe1-2 filtered1.2.fq --pe2-1 filtered2.1.fq --pe2-2 filtered2.2.fq -o HCMV-assembly/"
+os.system(spades_cmd)
+
+with open("PipelineProject.log", 'a') as f:
+    f.write(spades_cmd)
