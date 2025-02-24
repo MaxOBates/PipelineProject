@@ -90,6 +90,17 @@ def count_sig_contigs(fasta):
                 contig_counter += 1
     return contig_counter
 
+def count_sig_bps(fasta):
+    bp_counter = 0
+    with open(fasta, "r") as f:    
+        for record in SeqIO.parse(f,"fasta"):
+            if len(record.seq) > 1000:
+                bp_counter += len(record.seq)
+    return bp_counter
+
 sig_contigs = str(count_sig_contigs("./HCMV-assembly/contigs.fasta"))
+sig_bps = str(count_sig_bps("./HCMV-assembly/contigs.fasta"))
+
 with open("PipelineProject.log", 'a') as g:
     g.write(f"There are {sig_contigs} contigs > 1000 bp in the assembly.\n")
+    g.write(f"There are {sig_bps} bp in the assembly.\n")
