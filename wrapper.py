@@ -48,13 +48,6 @@ os.chdir("./PipelineProject_Max_Bates")
 f = open("PipelineProject.log", 'w')
 f.close()
 
-### TEST CODE FIX
-'''genome_ref = "~/Github/Genomes/GCF_000845245.1_ViralProj14559_genomic.fna"
-in_genome_1_1 = "/home/2025/mbates5/Github/Genomes/SRR5660030_1.fastq"
-in_genome_1_2 = "/home/2025/mbates5/Github/Genomes/SRR5660030_2.fastq"
-in_genome_2_1 = "/home/2025/mbates5/Github/Genomes/SRR5660033_1.fastq"
-in_genome_2_2 = "/home/2025/mbates5/Github/Genomes/SRR5660033_2.fastq"'''
-
 def read_count(fastq_file_list):
     read_counter = 0
     for fastq in fastq_file_list:
@@ -87,4 +80,16 @@ spades_cmd = "spades.py -k 99 -t 2 --only-assembler --pe1-1 filtered1.1.fq --pe1
 os.system(spades_cmd)
 
 with open("PipelineProject.log", 'a') as f:
-    f.write(spades_cmd)
+    f.write(spades_cmd + "\n")
+
+def count_sig_contigs(fasta):
+    contig_counter = 0
+    with open(fasta, "r") as f:    
+        for record in SeqIO.parse(f,"fasta"):
+            if len(record.seq) > 1000:
+                contig_counter += 1
+    return contig_counter
+
+sig_contigs = str(count_sig_contigs("./HCMV-assembly/contigs.fasta"))
+with open("PipelineProject.log", 'a') as g:
+    g.write(f"There are {sig_contigs} contigs > 1000 bp in the assembly.\n")
