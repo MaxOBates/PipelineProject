@@ -70,6 +70,12 @@ os.system(f"bowtie2-build {genome_ref} Genome_Index")
 os.system(f"bowtie2 --quiet -x Genome_Index -1 {in_genome_1_1} -2 {in_genome_1_2} -S mapped1.sam -p 2 --al-conc filtered1.fq")
 os.system(f"bowtie2 --quiet -x Genome_Index -1 {in_genome_2_1} -2 {in_genome_2_2} -S mapped2.sam -p 2 --al-conc filtered2.fq")
 
+os.system("mkdir Genome_Index")
+os.system("mv Genome_Index.* Genome_Index")
+
+os.system("mkdir Mapped_Reads")
+os.system("mv mapped*.sam Mapped_Reads")
+
 num_reads_after1 = read_count(["filtered1.1.fq","filtered1.2.fq"])
 num_reads_after2 = read_count(["filtered2.1.fq","filtered2.2.fq"])
 
