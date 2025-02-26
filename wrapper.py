@@ -32,6 +32,10 @@ def check_arg(args=None):
     help = "The name of the subfamily of viruses to blast against",
     required = True)
 
+    parser.add_argument("-o", "--outpath",
+    help = "the output path to follow, defaults to home directory",
+    required = False)
+
     return parser.parse_args(args)
 
 #retrieve command line arguments
@@ -42,16 +46,25 @@ in_genome_1_2 = arguments.input1_2
 in_genome_2_1 = arguments.input2_1
 in_genome_2_2 = arguments.input2_2
 comparing_genome = arguments.comparing_genomes
+if arguments.outpath:
+    out_path = arguments.outpath
+else:
+    out_path = os.environ["HOME"]
 
-home_dir = os.environ["HOME"]
+os.chdir(out_path)
 
-os.chdir(home_dir)
+try:
+    os.system("rm -r PipelineProject_Max_Bates")
+except OSError:
+    pass
+
 os.system("mkdir -p PipelineProject_Max_Bates")
 os.chdir("./PipelineProject_Max_Bates")
 
 # Ensuring log file is empty
 f = open("PipelineProject.log", 'w')
 f.close()
+
 
 def read_count(fastq_file_list):
     read_counter = 0
@@ -103,6 +116,11 @@ def count_sig_bps(fasta):
                 bp_counter += len(record.seq)
     return bp_counter
 
+def longest_contig(fasta):
+    with open(fasta, "r") as f:
+        contig = list(SeqIO.parse(f,"fasta"))[0]
+        SeqIO.write(contig, "contig_for_blast.fasta", "fasta")
+
 sig_contigs = str(count_sig_contigs("./HCMV-assembly/contigs.fasta"))
 sig_bps = str(count_sig_bps("./HCMV-assembly/contigs.fasta"))
 
@@ -111,7 +129,21 @@ with open("PipelineProject.log", 'a') as g:
     g.write(f"There are {sig_bps} bp in the assembly.\n")
 
 
+
 os.system(f"datasets download virus genome taxon {comparing_genome} --refseq --include genome")
 os.system("unzip ncbi_dataset.zip")
 os.system("mv ncbi_dataset/data/genomic.fna ./for_database.fasta")
-#os.system("rm -r ncbi_dataset")
+os.system("rm -r ncbi_dataset ncbi_dataset.zip README.md md5sum.txt")
+
+os.system(f"makeblastdb -in for_database.fasta -out {comparing_genome} -title {comparing_genome} -dbtype nucl")
+
+longest_contig("./HCMV-assembly/contigs.fasta")
+
+os.system(f"blastn -query contig_for_blast.fasta -db {comparing_genome} -out query_out.tsv -outfmt \"6 sacc pident length qstart qend sstart send bitscore evalue stitle\" -max_target_seqs 10")
+
+with open("PipelineProject.log",'a') as f:
+    f.write("sacc pident length qstart qend sstart send bitscore evalue stitle\n")
+    with open("query_out.tsv", "r") as g:
+        head = [next(g) for _ in range(10)]
+        for n in head:
+            f.write(n)
