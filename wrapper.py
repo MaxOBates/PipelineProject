@@ -10,23 +10,27 @@ def check_arg(args=None):
 
     parser.add_argument("-g", "--genome",
     help = "ref genome to map to",
-    required = False)
+    required = True)
 
     parser.add_argument("-i1_1", "--input1_1",
     help = "input genome 1 read 1 fastq",
-    required = False)
+    required = True)
 
     parser.add_argument("-i1_2", "--input1_2",
     help = "input genome 1 read 2 fastq",
-    required = False)
+    required = True)
 
     parser.add_argument("-i2_1", "--input2_1",
     help = "input genome 2 read 1 fastq",
-    required = False)
+    required = True)
 
     parser.add_argument("-i2_2", "--input2_2",
     help = "input genome 2 read 2 fastq",
-    required = False)
+    required = True)
+
+    parser.add_argument("-cg", "--comparing_genomes",
+    help = "The name of the subfamily of viruses to blast against",
+    required = True)
 
     return parser.parse_args(args)
 
@@ -37,6 +41,7 @@ in_genome_1_1 = arguments.input1_1
 in_genome_1_2 = arguments.input1_2
 in_genome_2_1 = arguments.input2_1
 in_genome_2_2 = arguments.input2_2
+comparing_genome = arguments.comparing_genomes
 
 home_dir = os.environ["HOME"]
 
@@ -104,3 +109,9 @@ sig_bps = str(count_sig_bps("./HCMV-assembly/contigs.fasta"))
 with open("PipelineProject.log", 'a') as g:
     g.write(f"There are {sig_contigs} contigs > 1000 bp in the assembly.\n")
     g.write(f"There are {sig_bps} bp in the assembly.\n")
+
+
+os.system(f"datasets download virus genome taxon {comparing_genome} --refseq --include genome")
+os.system("unzip ncbi_dataset.zip")
+os.system("mv ncbi_dataset/data/genomic.fna ./for_database.fasta")
+#os.system("rm -r ncbi_dataset")
