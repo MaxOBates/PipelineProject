@@ -130,7 +130,7 @@ with open("PipelineProject.log", 'a') as g:
 
 
 
-os.system(f"datasets download virus genome taxon {comparing_genome} --refseq --include genome")
+os.system(f"datasets download virus genome taxon {comparing_genome} --include genome")
 os.system("unzip ncbi_dataset.zip")
 os.system("mv ncbi_dataset/data/genomic.fna ./for_database.fasta")
 os.system("rm -r ncbi_dataset ncbi_dataset.zip README.md md5sum.txt")
@@ -139,11 +139,21 @@ os.system(f"makeblastdb -in for_database.fasta -out {comparing_genome} -title {c
 
 longest_contig("./HCMV-assembly/contigs.fasta")
 
-os.system(f"blastn -query contig_for_blast.fasta -db {comparing_genome} -out query_out.tsv -outfmt \"6 sacc pident length qstart qend sstart send bitscore evalue stitle\" -max_target_seqs 10")
+os.system(f"blastn -query contig_for_blast.fasta -db {comparing_genome} -out query_out.tsv -outfmt \"6 sacc pident length qstart qend sstart send bitscore evalue stitle\" -max_target_seqs 10 -max_hsps 1")
 
 with open("PipelineProject.log",'a') as f:
-    f.write("sacc pident length qstart qend sstart send bitscore evalue stitle\n")
+    f.write("sacc | pident | length | qstart | qend | sstart | send | bitscore | evalue | stitle\n")
     with open("query_out.tsv", "r") as g:
-        head = [next(g) for _ in range(10)]
-        for n in head:
-            f.write(n)
+        blast_out = g.read().splitlines()
+    if len(blast_out) <= 10:
+        for n in blast_out:
+            f.write(n + "\n")
+    else:
+        for n in range(10):
+            f.write(blast_out[n] + "\n")
+
+os.system("mkdir blast_in_out")
+os.system(f"mv {comparing_genome}.* for_database.fasta query_out.tsv contig_for_blast.fasta blast_in_out")
+
+os.system("mkdir filtered_reads")
+os.system("mv filtered*.*.fq filtered_reads")
