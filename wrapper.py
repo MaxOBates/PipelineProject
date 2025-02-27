@@ -77,8 +77,8 @@ def read_count(fastq_file_list):
     return read_counter
 
 # calling readcount for all infiles
-num_reads_before1 = read_count([in_genome_1_1,in_genome_1_2])
-num_reads_before2 = read_count([in_genome_2_1,in_genome_2_2])
+num_reads_before1 = read_count([in_genome_1_1])
+num_reads_before2 = read_count([in_genome_2_1])
 
 # running bowtie2 against genome to compare to
 os.system(f"bowtie2-build {genome_ref} Genome_Index")
@@ -92,8 +92,8 @@ os.system("mkdir Mapped_Reads")
 os.system("mv mapped*.sam Mapped_Reads")
 
 # finding the number of reads after filtering
-num_reads_after1 = read_count(["filtered1.1.fq","filtered1.2.fq"])
-num_reads_after2 = read_count(["filtered2.1.fq","filtered2.2.fq"])
+num_reads_after1 = read_count(["filtered1.1.fq"])
+num_reads_after2 = read_count(["filtered2.1.fq"])
 
 # writing number of reads before and after filtering to log file
 with open("PipelineProject.log", 'a') as f:
