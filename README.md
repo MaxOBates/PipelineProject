@@ -32,7 +32,7 @@ Required arguments:
 Optional Arguments:
     -o --outpath: The path to the directory that the outfile will be created in (defaults to the users home directory)
 
-Included in this repo is sample data which can be used to quickly test the functionality of the pipeline. It can be found at /PipelineProject/sample_data
+Included in this repo are sample data which can be used to quickly test the functionality of the pipeline. It can be found at /PipelineProject/sample_data
 
 Example call:
-python wrapper.py -g ./PipelineProject/sample_data/RefSeqGenome.fasta -i1_1 ./PipelineProject/sample_data/sampledata1_1.fastq -i1_2 ./PipelineProject/sample_data/sampledata1_2.fastq -2_1 ./PipelineProject/sample_data/sampledata2_1.fastq -i2_2 ./PipelineProject/sample_data/sampledata2_2.fastq -cg Betaherpesvirinae
+    python wrapper.py -g ./PipelineProject/sample_data/RefSeqGenome.fasta -i1_1 ./PipelineProject/sample_data/sampledata1_1.fastq -i1_2 ./PipelineProject/sample_data/sampledata1_2.fastq -2_1 ./PipelineProject/sample_data/sampledata2_1.fastq -i2_2 ./PipelineProject/sample_data/sampledata2_2.fastq -cg Betaherpesvirinae
